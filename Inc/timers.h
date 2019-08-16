@@ -1,5 +1,5 @@
-#ifndef ADC_H
-#define ADC_H
+#ifndef TIMERS_H
+#define TIMERS_H
 
 #include "stm32f0xx_system.h"
 
