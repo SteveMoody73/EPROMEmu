@@ -30,6 +30,13 @@ void SysTick_Handler(void)
 	HAL_SYSTICK_IRQHandler();
 }
 
+void HAL_MspInit(void)
+{
+	__HAL_RCC_SYSCFG_CLK_ENABLE();
+	__HAL_RCC_PWR_CLK_ENABLE();
+}
+
+
 void SystemClock_Config(void)
 {
 	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -37,12 +44,13 @@ void SystemClock_Config(void)
 	RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
 	// Initializes the CPU, AHB and APB busses clocks
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI14 | RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI14;
+	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
 	RCC_OscInitStruct.HSI14State = RCC_HSI14_ON;
+	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
 	RCC_OscInitStruct.HSI14CalibrationValue = 16;
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
 	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
 	RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;
 
@@ -52,7 +60,7 @@ void SystemClock_Config(void)
 	}
 
 	// Initializes the CPU, AHB and APB busses clocks
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1;
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -74,7 +82,6 @@ void SystemClock_Config(void)
 void Error_Handler(void)
 {
 }
-
 
 void MX_ADC_Init(void)
 {
@@ -244,7 +251,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 void MX_USART1_UART_Init(void)
 {
 	huart1.Instance = USART1;
-	huart1.Init.BaudRate = 115200;
+	huart1.Init.BaudRate = 57600; //115200;
 	huart1.Init.WordLength = UART_WORDLENGTH_8B;
 	huart1.Init.StopBits = UART_STOPBITS_1;
 	huart1.Init.Parity = UART_PARITY_NONE;
@@ -279,7 +286,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	    // USART1 interrupt Init
-	    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+	    HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
 	    HAL_NVIC_EnableIRQ(USART1_IRQn);
 	}
 }
